@@ -3,7 +3,6 @@ import json
 import logging
 import botocore
 import boto3
-import faker
 
 
 logLevel = os.getenv("LOG_LEVEL", "ERROR").upper()
