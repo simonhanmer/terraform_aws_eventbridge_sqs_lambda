@@ -13,5 +13,5 @@ variable "project_name" {
 variable "poll_window_in_seconds" {
     type        = number
     description = "max. number of seconds to poll sqs for before triggering lambda"
-    default     = 10
+    default     = 300
 }
