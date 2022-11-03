@@ -63,3 +63,43 @@ resource "aws_iam_role_policy_attachment" "reader_role_policy_attachment" {
   role       = aws_iam_role.reader_lambda_execution_role.name
   policy_arn = aws_iam_policy.lambda_logging_policy.arn
 }
+
+resource "aws_iam_role" "test_writer_lambda_execution_role" {
+  name = "${var.project_name}-test-lambda-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action = "sts:AssumeRole"
+        Effect = "Allow"
+        Sid    = ""
+        Principal = {
+          Service = "lambda.amazonaws.com"
+        }
+      },
+    ]
+  })
+
+  inline_policy {
+    name = "policy_${var.project_name}"
+    policy = jsonencode({
+      Version = "2012-10-17"
+      Statement = [
+        {
+          Sid    = "WriteS3"
+          Action = [ "s3:PutObject" ]
+          Effect = "Allow"
+          Resource = [
+            "${aws_s3_bucket.test_bucket.arn}/*"
+          ]
+        }
+      ]
+    })
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "test_writer_role_policy_attachment" {
+  role       = aws_iam_role.test_writer_lambda_execution_role.name
+  policy_arn = aws_iam_policy.lambda_logging_policy.arn
+}
