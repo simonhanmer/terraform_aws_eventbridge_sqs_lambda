@@ -5,13 +5,14 @@ data "archive_file" "reader_function_zip" {
 }
 
 resource "aws_lambda_function" "reader_function" {
-  function_name    = "${var.project_name}-reader-function"
-  role             = aws_iam_role.reader_lambda_execution_role.arn
-  description      = "Read SQS Events"
-  filename         = data.archive_file.reader_function_zip.output_path
-  source_code_hash = data.archive_file.reader_function_zip.output_base64sha256
-  handler          = "lambda_function.lambda_handler"
-  runtime          = "python3.9"
+  function_name                  = "${var.project_name}-reader-function"
+  role                           = aws_iam_role.reader_lambda_execution_role.arn
+  description                    = "Read SQS Events"
+  filename                       = data.archive_file.reader_function_zip.output_path
+  source_code_hash               = data.archive_file.reader_function_zip.output_base64sha256
+  handler                        = "lambda_function.lambda_handler"
+  runtime                        = "python3.9"
+  reserved_concurrent_executions = 1
   environment {
     variables = {
       LOG_LEVEL = "INFO"
