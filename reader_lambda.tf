@@ -14,7 +14,7 @@ resource "aws_lambda_function" "reader_function" {
   runtime          = "python3.9"
   environment {
     variables = {
-      LOG_LEVEL = "ERROR"
+      LOG_LEVEL = "INFO"
     }
   }
 }
