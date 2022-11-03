@@ -12,9 +12,10 @@ resource "aws_lambda_function" "test_writer_function" {
   source_code_hash = data.archive_file.test_writer_function_zip.output_base64sha256
   handler          = "lambda_function.lambda_handler"
   runtime          = "python3.9"
+  timeout          = 30
   environment {
     variables = {
-      LOG_LEVEL = "ERROR"
+      LOG_LEVEL = "INFO"
       BUCKET_NAME = aws_s3_bucket.test_bucket.id
       # FILE_COUNT = 10
     }

@@ -1,9 +1,10 @@
 import os
 import json
 import logging
-import botocore
+from botocore.exceptions import ClientError
 import boto3
-import random
+import uuid
+
 
 logLevel = os.getenv("LOG_LEVEL", "ERROR").upper()
 log   = logging.getLogger()
@@ -15,36 +16,41 @@ def lambda_handler(event, context):
     message = 'successful'
     log.debug(event)
 
-    fileCount = os.getenv('FILE_COUNT', 1)
+    fileCount = int(os.getenv('FILE_COUNT', 1))
     try:
         s3BucketName = os.environ['BUCKET_NAME']
     except KeyError:
         message = 'Cannot find BUCKET_NAME environment variable'
         log.error(message)
         status = 404
-    else:
-        # Check bucket exists
-        try:
-            s3 = boto3.resource('s3')
-            s3.meta.client.head_bucket(Bucket=s3BucketName)
-        except botocore.exceptions.ClientError as e:
-            status = e.response['Error']['Code']
-            if status == '403':
-                message = f"Cannot access {s3BucketName}"
-            elif status == '404':
-                message = f"Bucket {s3BucketName} doesn't exist."
-            else:
-                message = f"Unexpected error checking bucket {s3BucketName} - {e.response['Error']['Message']}"
+        return{
+            'statusCode': status,
+            'body': json.dumps(message)
+        }
 
-            log.error(message)
+    for _ in range(fileCount):
+        create_s3_object(s3BucketName)
 
+    log.info(f"Wrote {fileCount} objects to {s3BucketName}")
     return{
         'statusCode': status,
         'body': json.dumps(message)
     }
 
     
+def create_s3_object(bucket):
+    """
+    Generate an object with random name and write to s3 bucket
+    """
+    filename = str(uuid.uuid4())
+    filedata = os.urandom(1024)
 
+    s3_client = boto3.client('s3')
+    try:
+        log.debug(f"Write {filename} to {bucket}")
+        response = s3_client.put_object(Bucket = bucket, Key = filename, Body = filedata)
+    except ClientError as e:
+        log.debug(f"PutObject failed {e['response']['Message']} ({e['response']['Code']})")
 
 
 
