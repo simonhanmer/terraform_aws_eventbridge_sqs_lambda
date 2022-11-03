@@ -5,7 +5,7 @@ data "archive_file" "reader_function_zip" {
 }
 
 resource "aws_lambda_function" "reader_function" {
-  function_name    = "function-${var.project_name}"
+  function_name    = "${var.project_name}-reader-function"
   role             = aws_iam_role.reader_lambda_execution_role.arn
   description      = "Read SQS Events"
   filename         = data.archive_file.reader_function_zip.output_path
@@ -24,4 +24,9 @@ resource "aws_lambda_event_source_mapping" "sqs_event_source_mapping" {
   function_name                      = aws_lambda_function.reader_function.arn
   maximum_batching_window_in_seconds = var.poll_window_in_seconds
   batch_size                         = 10 # max. for sqs = 10
+}
+
+resource "aws_cloudwatch_log_group" "reader_lambda_log_group" {
+  name = "/aws/lambda/${aws_lambda_function.reader_function.function_name}"
+  retention_in_days = 1
 }

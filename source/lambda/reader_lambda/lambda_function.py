@@ -12,8 +12,5 @@ log.setLevel(logLevel)
 
 def lambda_handler(event, context):
     log.debug(event)
-    return {
-        'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
-    }
+
 
