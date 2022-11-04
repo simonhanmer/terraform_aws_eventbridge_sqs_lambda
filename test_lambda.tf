@@ -17,7 +17,7 @@ resource "aws_lambda_function" "test_writer_function" {
     variables = {
       LOG_LEVEL = "INFO"
       BUCKET_NAME = aws_s3_bucket.test_bucket.id
-      # FILE_COUNT = 10
+      FILE_COUNT = 100
     }
   }
 }
