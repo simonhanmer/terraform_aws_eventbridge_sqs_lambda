@@ -24,7 +24,7 @@ resource "aws_lambda_event_source_mapping" "sqs_event_source_mapping" {
   event_source_arn                   = aws_sqs_queue.sqs.arn
   function_name                      = aws_lambda_function.reader_function.arn
   maximum_batching_window_in_seconds = var.poll_window_in_seconds
-  batch_size                         = 10 # max. for sqs = 10
+  batch_size                         = 50
 }
 
 resource "aws_cloudwatch_log_group" "reader_lambda_log_group" {
