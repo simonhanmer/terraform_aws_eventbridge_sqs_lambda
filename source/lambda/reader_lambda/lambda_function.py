@@ -19,4 +19,6 @@ def lambda_handler(event, context):
         log.debug(f"message body = {json.loads(message['body'])}")
         requestParameters=json.loads(message['body'])['detail']['requestParameters']
         log.info(f"Process {requestParameters['key']} uploaded to bucket {requestParameters['bucketName']}")
+
+    raise Exception('force failure of lambda')
         
